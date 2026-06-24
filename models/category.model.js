@@ -1,11 +1,12 @@
-import {Sequalize, DataTypes} from 'sequelize';
+import {Sequelize, DataTypes} from 'sequelize';
 import orm from '../config/sequelize.js';
 
 export const Category = orm.define('Category', {
     id_category: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'category_id'
     },
     name: {
         type: DataTypes.STRING,
@@ -24,7 +25,7 @@ export const Category = orm.define('Category', {
     created_at: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequalize.NOW
+        defaultValue: Sequelize.NOW
     },
     is_active: {
         type: DataTypes.BOOLEAN,

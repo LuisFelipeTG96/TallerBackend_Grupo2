@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
 
 // Configuración de la conexión
-const orm = new Sequelize('bdprueba', 'ecommerce_demo', '', 
+const orm = new Sequelize('ecommerce_demo', 'root', '',
         {
             host: 'localhost', 
             dialect: 'mysql',

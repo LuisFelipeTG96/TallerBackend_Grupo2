@@ -6,37 +6,41 @@ export const Product = orm.define('Product', {
     id_product: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'product_id'
+    },
+    category_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    sku: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: { len: [0, 30] }
     },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
-        validate: {
-            len: [1, 120]
-        }
+        validate: { len: [1, 120] }
     },
     description: {
         type: DataTypes.STRING,
         allowNull: true,
-        validate: {
-            len: [0, 255]
-        }
+        validate: { len: [0, 255] }
     },
     price: {
         type: DataTypes.DECIMAL(10, 2),
-        allowNull: false,
-        validate: {
-            isDecimal: true,
-            min: 0
-        }
+        allowNull: false
     },
     stock: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        validate: {
-            isInt: true,
-            min: 0
-        }
+        defaultValue: 0
+    },
+    archivo: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: { len: [0, 100] }
     },
     created_at: {
         type: DataTypes.DATE,
@@ -58,24 +62,15 @@ export const Product = orm.define('Product', {
     timestamps: false
 });
 
-Category.hasMany(Product, { foreignKey: 'id_category' });
-Product.belongsTo(Category, { foreignKey: 'id_category' });
-
-export const connect = async () => {
-    await orm.authenticate();
-    console.log("Conexion establecida");
-}
+Category.hasMany(Product, { foreignKey: 'category_id' });
+Product.belongsTo(Category, { foreignKey: 'category_id' });
 
 export const getAllProducts = async () => {
     console.log("------------model------------");
     const results = await Product.findAll({
         include: [Category],
-        where: {
-            is_active: true
-        }
+        where: { is_active: true }
     });
-    
-    console.log(results);
     return results.map(u => u.toJSON());
 };
 
@@ -83,29 +78,23 @@ export const getProductById = async (id_product) => {
     console.log("------------model------------");
     const result = await Product.findAll({
         include: [Category],
-        where: {
-            id_product: id_product,
-            is_active: true
-        }
+        where: { id_product: id_product, is_active: true }
     });
-    console.log(result);
     return result.map(u => u.toJSON());
 };
 
-export const createProduct = async (objProduct, id_category) => {
+export const createProduct = async (objProduct) => {
     try {
-        console.log("------------model------------");
         const result = await Product.create({
+            category_id: objProduct.category_id,
+            sku: objProduct.sku,
             name: objProduct.name,
             description: objProduct.description,
             price: objProduct.price,
-            stock: objProduct.stock,
-            id_category: id_category
+            stock: objProduct.stock
         });
-        console.log(result);
-        return result.toJSON();
+        return result.toJSON().id_product;
     } catch (error) {
-        console.log("exception");
         console.log(error);
         throw error;
     }
@@ -114,20 +103,17 @@ export const createProduct = async (objProduct, id_category) => {
 export const updateProduct = async (id_product, objProduct) => {
     try {
         const [updatedRows] = await Product.update({
+            sku: objProduct.sku,
             name: objProduct.name,
             description: objProduct.description,
             price: objProduct.price,
             stock: objProduct.stock,
             updated_at: new Date()
         }, {
-            where: {
-                id_product: id_product
-            }
+            where: { id_product: id_product }
         });
-        console.log(updatedRows);
         return updatedRows;
     } catch (error) {
-        console.log("exception");
         console.log(error);
         throw error;
     }
@@ -138,15 +124,33 @@ export const deleteProduct = async (id_product) => {
         const [updatedRows] = await Product.update({
             is_active: false
         }, {
-            where: {
-                id_product: id_product
-            }
+            where: { id_product: id_product }
         });
-        console.log(updatedRows);
         return updatedRows;
     } catch (error) {
-        console.log("exception");
         console.log(error);
         throw error;
     }
+};
+
+export const updateArchivo = async (id_product, filename) => {
+    try {
+        const [updatedRows] = await Product.update({
+            archivo: filename
+        }, {
+            where: { id_product: id_product }
+        });
+        return updatedRows;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+};
+
+export const downloadArchivo = async (id_product) => {
+    const result = await Product.findOne({
+        where: { id_product: id_product }
+    });
+    if (!result) return null;
+    return 'uploads/' + result.toJSON().archivo;
 };

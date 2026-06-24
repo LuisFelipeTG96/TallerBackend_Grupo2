@@ -5,7 +5,8 @@ export const Customer = orm.define('Customer', {
     id_customer: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        field: 'customer_id'
     },
     first_name: {
         type: DataTypes.STRING,

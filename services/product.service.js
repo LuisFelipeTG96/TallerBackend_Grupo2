@@ -12,9 +12,9 @@ export const getProductByIdService = async (id_product) => {
     return results;
 };
 
-export const createProductService = async (objProduct, id_category) => {
+export const createProductService = async (objProduct) => {
     console.log("------------service------------");
-    const result = await modelProduct.createProduct(objProduct, id_category);
+    const result = await modelProduct.createProduct(objProduct);
     return result;
 };
 

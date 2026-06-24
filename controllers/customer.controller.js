@@ -25,8 +25,10 @@ export const getCustomerById = async (req, res) => {
 
 export const createCustomer = async (req, res) => {
   console.log("------------controller------------");
+  const objCustomer = req.body;
+  console.log(objCustomer);
   try {
-    let idCustomer = await customerService.createCustomerService(objCustomer, req.body.id_customer);
+    let idCustomer = await customerService.createCustomerService(objCustomer);
     console.log("... despues de customerService.createCustomerService()");
     res.json({"id_customer": idCustomer });
   } catch (error) {

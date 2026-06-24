@@ -12,9 +12,9 @@ export const getCustomerByIdService = async (id_customer) => {
     return results;
 };
 
-export const createCustomerService = async (objCustomer, id_customer) => {
+export const createCustomerService = async (objCustomer) => {
     console.log("------------service------------");
-    const result = await modelCustomer.createCustomer(objCustomer, id_customer);
+    const result = await modelCustomer.createCustomer(objCustomer);
     return result;
 };
 
