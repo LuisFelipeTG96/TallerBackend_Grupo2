@@ -1,72 +1,63 @@
 import * as customerService from '../services/customer.service.js';
 
-export const createCustomer = async (req, res) => {
+export const getAllCustomers = async (req, res) => {
+  console.log("------------controller------------");
   try {
-    console.log(req.body)
-    const customer_id = await customerService.createCustomer(req.body);
-    res.status(201).json({"customer_id" : customer_id});
+    const customers = await customerService.getAllCustomers();
+    console.log("... despues de customerService.getAllCustomers()");
+    res.json(customers || []);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(500).json({ error: "Error obteniendo registros" });
   }
-};
-
-export const getCustomers = async (req, res) => {
-  try {
-    const customers = await customerService.getCustomers();
-    if(!customers || customers.length === 0) {
-      return res.status(404).json({ error: 'No customers found' });
-    }
-    res.status(200).json(customers);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-export const getActiveCustomers = async (req, res) => {
-  try {
-    const customers = await customerService.getActiveCustomers();
-    if(!customers || customers.length === 0) {
-      return res.status(404).json({ error: 'No active customers found' });
-    }
-    res.status(200).json(customers);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+}
 
 export const getCustomerById = async (req, res) => {
- 
-    try {
-        const customer = await customerService.getCustomerById(req.params.id);
-        if (!customer) {
-        return res.status(404).json({ error: 'Customer not found' });
-        }
-        res.status(200).json(customer);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+  console.log("------------controller------------");
+  console.log("req.params.id: "+req.params.id);
+  try {
+    let customers = await customerService.getCustomerByIdService(req.params.id);
+    console.log("... despues de customerService.getCustomerByIdService()");
+    res.json(customers || []);
+  } catch (error) {
+    res.status(500).json({ error: "Error obteniendo registro" });
+  };
+};
+
+export const createCustomer = async (req, res) => {
+  console.log("------------controller------------");
+  const objCustomer = req.body;
+  console.log(objCustomer);
+  try {
+    let idCustomer = await customerService.createCustomerService(objCustomer);
+    console.log("... despues de customerService.createCustomerService()");
+    res.json({"id_customer": idCustomer });
+  } catch (error) {
+    res.status(500).json({ error: "Error ingresando registros" });
+  }
 };
 
 export const updateCustomer = async (req, res) => {
-  try {
-    const response = await customerService.updateCustomer(req.params, req.body);
-    if (!response) {
-      return res.status(404).json({ error: 'Customer not found' });
-    }
-    res.status(200).json({affectedRows: response.affectedRows});
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  console.log("------------controller------------");
+  const objCustomer = req.body;
+  console.log(objCustomer);
+  customerService.updateCustomerService(req.params.id, objCustomer)
+    .then((numRegistros) => {
+      console.log("... despues de customerService.updateCustomerService()");
+      res.json({ "numRegistros": numRegistros });
+    })
+    .catch( err => {
+      res.status(500).json({ error: "Error actualizando registro" });
+    });
 };
 
 export const deleteCustomer = async (req, res) => {
-  try {
-    const response = await customerService.deleteCustomer(req.params);
-    if (!response) {
-      return res.status(404).json({ error: 'Customer not found' });
-    }
-    res.status(200).json({affectedRows: response.affectedRows});
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  console.log("------------controller------------");
+  customerService.deleteCustomerService(req.params.id)
+    .then((numRegistros) => {
+      console.log("... despues de customerService.deleteCustomerService()");
+      res.json({ "numRegistros": numRegistros });
+    })
+    .catch( err => {
+      res.status(500).json({ error: "Error eliminando registro" });
+    });
 };

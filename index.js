@@ -1,20 +1,18 @@
+import 'dotenv/config';
+
 import express from "express";
-import bodyParser from "body-parser";
-import cors from "cors";
+import _cors from "./config/cors.js";
 import api from "./routes.js";
+import PUERTO from "./utils/constantes.js";
 
-const corsOptions = {
-    origin: "https://webfront.mipaginaweb.com/",
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-};
+const app = express();
+app.use(express.json());
+app.use(_cors);
 
-const app= express();
-app.use(bodyParser.json());
 app.use("/api/v1", api);
-app.use(cors(corsOptions));
 
-app.listen("4001", () => {
-    console.log('Listening on '+4001);
+app.use(express.static('uploads'));
+
+app.listen(PUERTO, () => {
+    console.log('Listening on ' + PUERTO);
 });
